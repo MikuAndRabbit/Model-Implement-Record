@@ -1,0 +1,55 @@
+model:
+  image_size: 224
+  num_layers: 4
+  num_tokens: 8192
+  codebook_dim: 1024
+  hidden_dim: 512
+train:
+  control:
+    s_epoch: 1
+    e_epoch: 300
+    continue_train: False
+    checkpoint: ''  # checkpoint to load before continuing training
+  distributed:
+    backend: 'nccl'
+  device: 'cuda'
+  checkpoint:
+    folder: ''  # Path to store checkpoints
+    max_size: 500
+  data:
+    folder: ''  #  Dataset path containing only images
+    bs: 32
+    num_workers: 32
+  optimizer:
+    method: 'adamw'
+    lr: 1.0e-4
+    beta_1: 0.9
+    beta_2: 0.999
+    eps: 1.0e-8
+    weight_decay: 0.05 # 1.0e-4 
+  schedule:  # kl, temperature are not used because the training effect is not good
+    param:
+      decay_coefficient: 0.999
+    kl:
+      start: 0
+      end: 6.6
+      length: 5000
+    temperature:
+      start: 1
+      end: 0.0625
+      length: 150000
+    lr:
+      start: 1.0e-4  # same to train.optimizer.lr
+      end: 1.25e-6
+      length: 1200000
+val:
+  need: True
+  interval: 1
+  data:
+    bs: 32
+    folder: ''  # Dataset path containing only images
+    num_workers: 32
+log:
+  rotation: '100MB'
+  path:
+    folder: ''  # Path to store logs
