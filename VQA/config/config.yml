@@ -1,0 +1,80 @@
+model:
+  vqa:
+    fusion_method: 'multiply'
+    head_type: 'plain'
+    head:
+      input_dim: 768
+      num_answers: 3129
+      layernorm_eps: 1.0e-5
+  tmep:
+    patch_nums: 196  #! unused now -> will be used in TEMP_V2.forward method
+    pretrain-path: '/path/to/project/code/VQA/pretrain_weights/'
+    config-path: '/path/to/project/code/VQA/config/tmep-config.yml'
+train:
+  log:
+    rotation: '100MB'
+    path:
+      folder: '/path/to/project/log/vqa/'
+  control:
+    s_epoch: 1
+    e_epoch: 100
+    continue_train: False
+    checkpoint: ''
+    use_lora: True
+    freeze_pretrain: 'none'
+  distributed:
+    backend: 'nccl'
+  device: 'cuda'
+  checkpoint:
+    folder: '/path/to/project/checkpoints/vqa/'
+    max_size: 500
+  schedule:
+    lr:
+      end: 1.25e-6
+      length: 1200000
+  optimizer:
+    method: 'adamw'
+    lr: 1.0e-5
+    beta_1: 0.9
+    beta_2: 0.999
+    eps: 1.0e-8
+    weight_decay: 0.01 # 1.0e-4
+eval:
+  device: 'cuda'
+  pretrain_weights_folder: '/path/to/project/backup/vqa-checkpoints/cross/30_52020/'
+  result_path: '/path/to/project/code/VQA/eval-cross-result.json'
+  log:
+    rotation: '100MB'
+    path:
+      folder: '/path/to/project/log/vqa-eval/'
+data:
+  dataset:
+    common_set: &dataset_common_set
+      image_root: '/path/to/project/dataset/mscoco/gather/'
+      image_size: 224
+      vocab_filepath: '/path/to/project/code/VQA/vocab/en_vocab.txt'
+      text_max_length: 128
+    train:
+      standard_filepath: '/path/to/project/dataset/VQA/mscoco_train_question_answer_image.json'
+      <<: *dataset_common_set
+      augumentation: False
+    val: &val_dataset_setting
+      standard_filepath: '/path/to/project/dataset/VQA/mscoco_val_question_answer_image.json'
+      <<: *dataset_common_set
+      augumentation: False
+    eval:
+      standard_filepath: '/path/to/project/dataset/VQA/mscoco_val_question_answer_image.json'
+      <<: *dataset_common_set
+      augumentation: False
+  dataloader:
+    common_set: &dataloader_common_set
+      bs: 32
+      num_workers: 32
+    train:
+      <<: *dataloader_common_set
+    val:
+      <<: *dataloader_common_set
+    eval:
+      <<: *dataloader_common_set
+  answer2label_json: '/path/to/project/dataset/VQA/trainval_ans2label.json'
+  label2answer_json: '/path/to/project/dataset/VQA/trainval_label2ans.json'

@@ -1,0 +1,81 @@
+model:
+  bert:
+    bert_name: "base"
+    bert_base_ckpt: True
+    bert_large_ckpt: True
+    vocab_size: 30522
+    bert_base:
+      hidden_size: 768
+      num_hidden_layers: 12
+      num_attention_heads: 12
+      intermediate_size: 3072
+    bert_large:
+      hidden_size: 1024
+      num_hidden_layers: 24
+      num_attention_heads: 16
+      intermediate_size: 4096
+
+  vit:
+    vit_name: "base"
+    vit_base_ckpt: True
+    vit_large_ckpt: True
+    image_size: 224
+    patch_size: 16
+    vocab_size: 8192
+    vit_base:
+      hidden_size: 768
+      num_hidden_layers: 12
+      num_attention_heads: 12
+      intermediate_size: 3072
+    vit_large:
+      hidden_size: 1024
+      num_hidden_layers: 24
+      num_attention_heads: 16
+      intermediate_size: 4096
+
+  cross_encoder:
+    cross_name: "base"
+    model_type: 2
+    cross_base:
+      hidden_size: 768
+      num_hidden_layers: 12
+      num_attention_heads: 12
+      intermediate_size: 3072
+    cross_large:
+      hidden_size: 1024
+      num_hidden_layers: 24
+      num_attention_heads: 16
+      intermediate_size: 4096
+
+  dvae:
+    model_path: "/path/to/project/code/VQA/pretrain_weights/"
+    image_size: 224
+    num_layers: 4
+    num_tokens: 8192
+    codebook_dim: 768
+    hidden_dim: 512
+
+
+transform:
+  text_mask:
+    vocab_file: "/path/to/project/code/VQA/vocab/en_vocab.txt"
+    max_length: 128
+    mlm_probability: 0.15
+    add_special_tokens: True
+    return_attention_mask: True
+
+  image:
+    brightness: 0.4
+    contrast: 0.4
+    saturation: 0.4
+    hflip_probability: 0.5
+    patch_image_size: 224
+    token_image_size: 224
+    patch_interpolation: "bicubic" #[random, bilinear, bicubic]
+    token_interpolation: "lanczos"
+
+  image_mask:
+    patch_num: 14
+    mim_probability: 0.15
+    min_masking_patches_num: 4
+    min_aspect: 0.3

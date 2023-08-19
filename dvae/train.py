@@ -9,7 +9,7 @@ import yaml
 import numpy as np
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from torch.optim.lr_scheduler import LRScheduler, CosineAnnealingLR, ExponentialLR
+from torch.optim.lr_scheduler import LRScheduler, CosineAnnealingLR
 from torch.optim.optimizer import Optimizer
 from torch.optim.adamw import AdamW
 from loguru import logger
@@ -142,10 +142,10 @@ class DVAE_Train():
                 loss = self.model(img = images, temperature = temperature, kl_div_loss_weight = kl, return_loss = True)
             total_loss += loss.cpu().item()
             total_cnt += images.shape[0]
-        
+
         # rank loss info
         logger.debug(f'Valuation    epoch: {epoch}, rank id: {self.rank}, items: {total_cnt}, loss: {total_loss}')
-        
+
         # gather all loss & cnt
         proc_loss_cnt = torch.tensor((total_loss, total_cnt), dtype = torch.float32).cuda().detach()
         torch.distributed.all_gather(self.world_val_loss, proc_loss_cnt)
@@ -177,7 +177,7 @@ class DVAE_Train():
                     if self.checkpoint_pos is not None and epoch not in self.saved_epoch_idx:
                         self.save_model(epoch)
                         self.saved_epoch_idx.add(epoch)
-            
+ 
 
     def _train(self, epoch: int):
         proc_epoch_cnt = 0
@@ -268,7 +268,7 @@ def init_seeds(seed=0, cuda_deterministic=True):
 
 if __name__ == "__main__":
     # load config
-    CONFIG_PATH = r'/gly/guogb/lym/code/dVAE/config.yaml'
+    CONFIG_PATH = r''
     with open(CONFIG_PATH, 'r') as f:
         config = yaml.safe_load(f)
 

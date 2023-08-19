@@ -37,9 +37,6 @@ def plot_loss(loss: List[float], plot_filepath: str, color: str, title: str, plo
     loss_print_idx_list = [i for i in range(0, len(x), plot_step)]
     for idx in loss_print_idx_list:
         plt.text(x[idx], y[idx], f"{y[idx]:.2f}", ha='center', va='bottom', fontsize=10)
-    # if (len(x) - 1) % plot_step != 1:
-    #     last_idx = len(x) - 1
-    #     plt.text(x[last_idx], y[last_idx], f"{y[last_idx]:.2f}", ha='center', va='bottom', fontsize=10)
     
     # axis
     plt.xlabel("epoch")
@@ -48,17 +45,3 @@ def plot_loss(loss: List[float], plot_filepath: str, color: str, title: str, plo
     
     # save image
     plt.savefig(plot_filepath)
-
-plot_loss(
-    get_losses(r'/gly/guogb/lym/train.log'),
-    '/gly/guogb/lym/train-loss.svg',
-    'b',
-    'Loss of Training'
-)
-
-plot_loss(
-    get_losses(r'/gly/guogb/lym/val.log'),
-    '/gly/guogb/lym/val-loss.svg',
-    'r',
-    'Loss of Valuation'
-)

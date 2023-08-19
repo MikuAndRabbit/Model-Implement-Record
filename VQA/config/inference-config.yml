@@ -1,0 +1,21 @@
+model:
+  pretrain_folder: '/path/to/project/backup/vqa-checkpoints/plain-head/cross/30_52020'
+  device: 'cuda'
+  vqa:
+    fusion_method: 'multiply'
+    head_type: 'plain'
+    head:
+      input_dim: 768
+      num_answers: 3129
+      layernorm_eps: 1.0e-5
+  tmep:
+    patch_nums: 196  #! unused now -> will be used in TEMP_V2.forward method
+    config-path: '/path/to/project/code/VQA/config/tmep-config.yml'
+  inference:
+    text_max_length: 128
+    image_size: 224
+data:
+  answer2label_json: '/path/to/project/dataset/VQA/trainval_ans2label.json'
+  label2answer_json: '/path/to/project/dataset/VQA/trainval_label2ans.json'
+  vocab_filepath: '/path/to/project/code/VQA/vocab/en_vocab.txt'
+
