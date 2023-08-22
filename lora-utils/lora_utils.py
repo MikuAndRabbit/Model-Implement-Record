@@ -38,10 +38,11 @@ def make_lora_model_by_type(model: nn.Module, replace: List[str], lora_bias: str
     need_replace_module = tuple(need_replace_module)
 
     # replace
-    for name, submodel in model.named_modules():
-        if isinstance(submodel, need_replace_module):
-            setattr(model, name, make_layer_lorable(
-                submodel, **lora_replace_config))
+    name2submodel = dict(model.named_modules())
+    submodels_name = list(name2submodel.keys())
+    for name in submodels_name:
+        if isinstance(name2submodel[name], need_replace_module):
+            setattr(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
 
     # only make lora layer trainable
     lora.mark_only_lora_as_trainable(model, lora_bias)
@@ -52,11 +53,12 @@ def make_lora_model_by_type(model: nn.Module, replace: List[str], lora_bias: str
 def make_lora_model_by_name(model: nn.Module, name_contains: List[str],  lora_bias: str, **lora_replace_config) -> nn.Module:
     model = copy.deepcopy(model)
 
-    for name, submodel in model.named_modules():
+    name2submodel = dict(model.named_modules())
+    submodels_name = list(name2submodel.keys())
+    for name in submodels_name:
         for need_replace_name in name_contains:
             if name.find(need_replace_name) != - 1:
-                setattr(model, name, make_layer_lorable(
-                    submodel, **lora_replace_config))
+                setattr(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
                 break
 
     return model
