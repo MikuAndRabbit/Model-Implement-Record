@@ -17,8 +17,12 @@ class Cross_TransFormer(nn.Module):
                                                         batch_first=True)
         self.encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=self.num_hidden_layers)
 
-    def forward(self, input_embeddings, input_mask):
-        out = self.encoder(input_embeddings, input_mask)
+    def forward(self, input_embeddings, input_mask = None):
+        if input_mask is not None:
+            input_mask = ~input_mask
+            out = self.encoder(input_embeddings, input_mask)
+        else:
+            out = self.encoder(input_embeddings)
 
         return out
 
