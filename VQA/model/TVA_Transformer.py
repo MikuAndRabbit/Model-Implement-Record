@@ -69,13 +69,3 @@ class TV_Mask(nn.Module):
             cross_mask =cross_mask.bool()
 
         return cross_mask
-
-
-
-
-
-
-
-
-
-

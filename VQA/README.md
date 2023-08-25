@@ -72,6 +72,13 @@ class BEiT3_VQA_Head(nn.Module):
 ```
 VQA
 ├── README.md
+├── environment.yml: 训练、评估和推理时所使用的 Conda 环境，请注意其中可能包含了本项目运行不需要的包
+├── train.py: 模型训练框架
+├── eval.py: VQA 评估
+├── inference.py: VQA 推理
+├── vqa.py: VQA 下游任务相关的模型
+├── vqa_demo.py: 使用 gradio 库构建一个展示 VQA 任务的服务
+├── process_log.py: 处理日志文件并将 loss 绘制为折线图
 ├── config
 │   ├── config.yml: VQA 模型、训练、验证、评估的相关参数
 │   ├── inference-config.yml: 推理时所使用的配置文件
@@ -84,18 +91,14 @@ VQA
 │   ├── example: 模型加载训练、验证数据时所用的标准格式文件
 │   │   └── question_answer_image.json
 │   └── vqa2_preprocess.py: 预处理 VQA-v2 数据集
-├── eval.py: VQA 评估
-├── inference.py: VQA 推理
 ├── model: backbone model 的代码
 │   ├── Discrete_vae.py
 │   ├── TMEP.py
 │   ├── TMEP_pretrain.py
 │   └── TVA_Transformer.py
 ├── pretrain_weights: 存放加载模型所需的权重文件
-├── train.py: 模型训练框架
 ├── vocab
 │   └── en_vocab.txt: BertTokenizer 所使用的词表
-├── vqa.py: VQA 下游任务相关的模型
 └── vqa2_eval_tools: VQA-v2 数据集官方提供的评估代码 (升级到 python3 可用版本)
     ├── README.md
     ├── vqaEval.py
