@@ -19,26 +19,35 @@ def make_layer_lorable(layer: nn.Module, **lora_config):
     return lora_layer
 
 
+def _set_module(model: nn.Module, submodule_name: str, new_module: nn.Module):
+    module_name_path = submodule_name.split('.')
+    submodule_names = module_name_path[:-1]
+    current_model = model
+    for name in submodule_names:
+        current_model = getattr(current_model, name)
+    setattr(current_model, module_name_path[-1], new_module)
+
+
 def make_lora_model_by_type(model: nn.Module, replace: List[str], lora_bias: str, **lora_replace_config) -> nn.Module:
     model = copy.deepcopy(model)
 
-    need_replace_module = []
+    replace_module_type = []
     if 'linear' in replace:
-        need_replace_module.append(nn.Linear)
+        replace_module_type.append(nn.Linear)
     if 'conv2d' in replace:
-        need_replace_module.append(nn.Conv2d)
+        replace_module_type.append(nn.Conv2d)
     if 'embedding' in replace:
-        need_replace_module.append(nn.Embedding)
-    if len(need_replace_module) == 0:
+        replace_module_type.append(nn.Embedding)
+    if len(replace_module_type) == 0:
         return model
-    need_replace_module = tuple(need_replace_module)
+    replace_module_type = tuple(replace_module_type)
 
     # replace
     name2submodel = dict(model.named_modules())
     submodels_name = list(name2submodel.keys())
     for name in submodels_name:
-        if isinstance(name2submodel[name], need_replace_module):
-            setattr(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
+        if isinstance(name2submodel[name], replace_module_type):
+            _set_module(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
 
     # only make lora layer trainable
     lora.mark_only_lora_as_trainable(model, lora_bias)
@@ -54,20 +63,17 @@ def make_lora_model_by_name(model: nn.Module, name_contains: List[str], **lora_r
     for name in submodels_name:
         for need_replace_name in name_contains:
             if name.find(need_replace_name) != - 1:
-                setattr(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
+                _set_module(model, name, make_layer_lorable(name2submodel[name], **lora_replace_config))
                 break
 
     return model
 
 
-def save_lora_checkpoint(model: nn.Module, checkpoint_filepath: str, lora_bias: str):
+def save_lora_weights(model: nn.Module, checkpoint_filepath: str, lora_bias: str):
     lora_dict = lora.lora_state_dict(model, lora_bias)
-    saved_dict = {
-        'weights': lora_dict
-    }
-    torch.save(saved_dict, checkpoint_filepath)
+    torch.save(lora_dict, checkpoint_filepath)
 
 
-def load_lora_checkpoint(model: nn.Module, pretrain_dict: Dict, lora_dict: Dict):
+def load_checkpoint_with_lora(model: nn.Module, pretrain_dict: Dict, lora_dict: Dict):
     model.load_state_dict(pretrain_dict, strict=False)
     model.load_state_dict(lora_dict, strict=False)

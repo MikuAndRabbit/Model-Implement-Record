@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # image folder
     IMAGE_ROOT = os.path.join(SAVE_ROOT, 'images')
     if not os.path.exists(IMAGE_ROOT):
-        os.mkdir(IMAGE_ROOT)
+        os.makedirs(IMAGE_ROOT)
 
     pairs = generate(words, LENGTH)
     res = []
